@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WinGo Master | Custom Splitter</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0b1218; color: white; text-align: center; padding: 20px; }
+        .container { max-width: 500px; margin: auto; }
+        .box { background: #161b22; border: 1px solid #30363d; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        
+        /* User Input */
+        .input-area { margin: 20px 0; }
+        label { color: #8b949e; display: block; margin-bottom: 10px; font-size: 14px; }
+        input[type="number"] { 
+            width: 90%; padding: 15px; border-radius: 10px; border: 2px solid #58a6ff; 
+            background: #0d1117; color: #00ff88; font-size: 24px; text-align: center; font-weight: bold;
+            outline: none;
+        }
+
+        /* Split Cards */
+        .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .card { background: #21262d; padding: 15px; border-radius: 12px; border: 1px solid #30363d; }
+        .label-text { font-size: 11px; color: #8b949e; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .val { font-size: 22px; font-weight: bold; }
+        .main-col { color: #00ff88; }
+        .cover-col { color: #ffcc00; }
+
+        /* Preview Table */
+        .preview-table { width: 100%; margin-top: 20px; font-size: 13px; border-top: 1px solid #30363d; padding-top: 15px; }
+        .p-win { color: #3fb950; }
+        .p-loss { color: #f85149; }
+        
+        .signal-box { font-size: 20px; font-weight: bold; color: #f0883e; background: #0d1117; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Hedge Calculator</h2>
+
+    <div class="box">
+        <div class="signal-box" id="signal">PREDICTED: GREEN | BIG</div>
+        
+        <div class="input-area">
+            <label>ENTER TOTAL BET AMOUNT (Rs.):</label>
+            <input type="number" id="totalAmt" placeholder="0" oninput="doSplit()">
+        </div>
+
+        <div class="split-grid">
+            <div class="card">
+                <span class="label-text">Main Side (70%)</span>
+                <div class="val main-col">Rs. <span id="mainBet">0</span></div>
+            </div>
+            <div class="card">
+                <span class="label-text">Cover Side (30%)</span>
+                <div class="val cover-col">Rs. <span id="coverBet">0</span></div>
+            </div>
+        </div>
+
+        <!-- Profit/Loss Preview -->
+        <table class="preview-table">
+            <tr>
+                <td align="left">If Main Wins:</td>
+                <td align="right" class="p-win" id="winProfit">+ Rs. 0</td>
+            </tr>
+            <tr>
+                <td align="left">If Cover Wins:</td>
+                <td align="right" class="p-loss" id="loseSafety">- Rs. 0</td>
+            </tr>
+        </table>
+    </div>
+
+    <button onclick="newSignal()" style="background:#21262d; color:white; border:1px solid #30363d; padding:10px 20px; border-radius:5px; cursor:pointer;">
+        Change Prediction
+    </button>
+</div>
+
+<script>
+    function doSplit() {
+        let total = parseFloat(document.getElementById('totalAmt').value);
+        
+        if (total > 0) {
+            // Split Logic
+            let main = Math.floor(total * 0.7);
+            let cover = total - main;
+
+            // Calculations for Preview
+            // If Main wins: (Main * 1.96) - Total Investment
+            let profitIfMainWins = (main * 1.96) - total;
+            // If Cover wins: (Cover * 1.96) - Total Investment
+            let lossIfCoverWins = total - (cover * 1.96);
+
+            // Update UI
+            document.getElementById('mainBet').innerText = main;
+            document.getElementById('coverBet').innerText = cover;
+            
+            document.getElementById('winProfit').innerText = "+ Rs. " + profitIfMainWins.toFixed(1);
+            document.getElementById('loseSafety').innerText = "- Rs. " + lossIfCoverWins.toFixed(1);
+        } else {
+            document.getElementById('mainBet').innerText = "0";
+            document.getElementById('coverBet').innerText = "0";
+            document.getElementById('winProfit').innerText = "+ Rs. 0";
+            document.getElementById('loseSafety').innerText = "- Rs. 0";
+        }
+    }
+
+    function newSignal() {
+        const colors = ["RED", "GREEN"];
+        const sizes = ["BIG", "SMALL"];
+        document.getElementById('signal').innerText = "PREDICTED: " + colors[Math.floor(Math.random()*2)] + " | " + sizes[Math.floor(Math.random()*2)];
+    }
+</script>
+
+</body>
+</html>
